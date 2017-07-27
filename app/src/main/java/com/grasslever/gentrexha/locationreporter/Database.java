@@ -17,11 +17,11 @@ class Database extends SQLiteOpenHelper {
 
     private static final String LOCATION_TABLE_NAME = "person";
     private static final String LOCATION_COLUMN_ID = "_id";
-    private static final String LOCATION_COLUMN_PLACE = "place";
-    private static final String LOCATION_COLUMN_WEATHER = "weather";
-    private static final String LOCATION_COLUMN_TIME = "time";
+    static final String LOCATION_COLUMN_PLACE = "place";
+    static final String LOCATION_COLUMN_WEATHER = "weather";
+    static final String LOCATION_COLUMN_TIME = "time";
 
-    public Database(Context context) {
+    Database(Context context) {
         super(context, DB_NAME , null, DB_VERSION);
     }
 

@@ -1,4 +1,4 @@
-package com.grasslever.gentrexha.locationreporter.fragments;
+package com.grasslever.gentrexha.locationreporter;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -18,5 +18,12 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_main,container,false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
     }
 }

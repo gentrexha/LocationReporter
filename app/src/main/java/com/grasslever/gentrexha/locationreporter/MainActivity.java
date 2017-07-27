@@ -1,30 +1,22 @@
 package com.grasslever.gentrexha.locationreporter;
 
 import android.Manifest;
-import android.app.Fragment;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.grasslever.gentrexha.locationreporter.fragments.GoogleMapFragment;
-import com.grasslever.gentrexha.locationreporter.fragments.HistoryFragment;
-import com.grasslever.gentrexha.locationreporter.fragments.InformationFragment;
-import com.grasslever.gentrexha.locationreporter.fragments.MainFragment;
+public class MainActivity extends AppCompatActivity implements GoogleMapFragment.OnLocationFound{
 
-public class MainActivity extends AppCompatActivity {
+    private int locationRequestCode;
+    private String mLatitude = "n/a";
+    private String mLongitude = "n/a";
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -40,7 +32,15 @@ public class MainActivity extends AppCompatActivity {
                     fragmentManager.beginTransaction().replace(R.id.content, new HistoryFragment()).commit();
                     return true;
                 case R.id.navigation_information:
-                    fragmentManager.beginTransaction().replace(R.id.content, new InformationFragment()).commit();
+                    InformationFragment newFragment = new InformationFragment();
+                    Bundle args = new Bundle();
+                    args.putString("latitude",mLatitude);
+                    args.putString("longitude",mLongitude);
+                    newFragment.setArguments(args);
+                    android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.content, newFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
                     return true;
             }
             return false;
@@ -59,5 +59,20 @@ public class MainActivity extends AppCompatActivity {
 
         android.app.FragmentManager fragmentManager = getFragmentManager();
         fragmentManager.beginTransaction().replace(R.id.content, new MainFragment()).commit();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, locationRequestCode);
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+            fragmentManager.beginTransaction().replace(R.id.content, new GoogleMapFragment()).commit();
+        else {
+            Toast.makeText(this,"Enable Location",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onLocationFound(String latitude, String longitude) {
+        mLatitude = latitude;
+        mLongitude = longitude;
     }
 }
