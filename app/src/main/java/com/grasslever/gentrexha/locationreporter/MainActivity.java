@@ -1,22 +1,27 @@
 package com.grasslever.gentrexha.locationreporter;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements GoogleMapFragment.OnLocationFound{
+import com.google.android.gms.maps.MapFragment;
 
-    private int locationRequestCode;
+public class MainActivity extends AppCompatActivity implements LocationMapFragment.OnLocationFound{
+
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 585;
     private String mLatitude = "n/a";
     private String mLongitude = "n/a";
+    MapFragment mapFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -26,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMapFragment
             android.app.FragmentManager fragmentManager = getFragmentManager();
             switch (item.getItemId()) {
                 case R.id.navigation_map:
-                    fragmentManager.beginTransaction().replace(R.id.content, new GoogleMapFragment()).commit();
+                    fragmentManager.beginTransaction().replace(R.id.content, new LocationMapFragment()).commit();
                     return true;
                 case R.id.navigation_history:
                     fragmentManager.beginTransaction().replace(R.id.content, new HistoryFragment()).commit();
@@ -57,16 +62,19 @@ public class MainActivity extends AppCompatActivity implements GoogleMapFragment
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_map);
 
+        mapFragment = new MapFragment();
         android.app.FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content, new MainFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content, new LocationMapFragment()).commit();
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, locationRequestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == LocationMapFragment.MY_PERMISSIONS_REQUEST_LOCATION){
+            mapFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
-            fragmentManager.beginTransaction().replace(R.id.content, new GoogleMapFragment()).commit();
         else {
-            Toast.makeText(this,"Enable Location",Toast.LENGTH_LONG).show();
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

@@ -7,12 +7,26 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by GRexha on 25-Jul-17.
@@ -31,6 +45,7 @@ public class InformationFragment extends Fragment {
     private static final String elevationAPIKey = "AIzaSyBvs_wbNGAqayC9V5sApoDzCi0gwfYszlQ";
     private String mPlace = "n/a";
     private Database db;
+    FloatingActionButton floatingActionButton;
 
     @Nullable
     @Override
@@ -48,53 +63,193 @@ public class InformationFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        textViewInformation = (TextView)view.findViewById(R.id.textview_information);
+        textViewInformation = (TextView)view.findViewById(R.id.textview_information_place);
         db = new Database(getActivity());
         Bundle bundle = getArguments();
         mLatitudeText = bundle.getString("latitude");
         mLongitudeText = bundle.getString("longitude");
-//        textViewInformation.setText(mLatitudeText + " and " + mLongitudeText);
+
+        floatingActionButton = (FloatingActionButton) view.findViewById(R.id.floating_action_button);
+        floatingActionButton.hide();
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                db.insertLocation(mPlace,mTemp,new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new java.util.Date()));
+            }
+        });
 
         if (isNetworkAvailable()) {
             new RetrieveElevation().execute();
             new RetrieveWeather().execute();
         }
         else {
-            textViewInformation.setText("Placeholder");
+            Toast.makeText(getActivity(),"You have no available internet connection",Toast.LENGTH_LONG).show();
         }
     }
 
     private class RetrieveWeather extends AsyncTask<Void,Void,JSONObject> {
+
+        Exception mException;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            this.mException = null;
         }
 
         @Override
-        protected JSONObject doInBackground(Void... params) {
-            return null;
+        protected JSONObject doInBackground(Void... voids) {
+
+            StringBuilder urlString = new StringBuilder();
+            urlString.append(openweatherAPIURL);
+            urlString.append(mLatitudeText);
+            urlString.append("&lon=");
+            urlString.append(mLongitudeText);
+            urlString.append("&units=metric");
+            urlString.append("&apiKey=");
+            urlString.append(openweatherAPIKey);
+//            Log.println(Log.INFO,"URL:",urlString.toString());
+            HttpURLConnection objURLConnection = null;
+            URL objURL;
+            JSONObject objJSON = null;
+            InputStream objInStream = null;
+
+            try {
+                objURL = new URL(urlString.toString());
+                objURLConnection = (HttpURLConnection) objURL.openConnection();
+                objURLConnection.setRequestMethod("GET");
+                objURLConnection.setDoOutput(true);
+                objURLConnection.setDoInput(true);
+                objURLConnection.connect();
+                objInStream = objURLConnection.getInputStream();
+                BufferedReader objBReader = new BufferedReader(new InputStreamReader(objInStream));
+                String line;
+                String response = "";
+                while ((line = objBReader.readLine()) != null) {
+                    response += line;
+                }
+                objJSON = (JSONObject) new JSONTokener(response).nextValue();
+            }
+            catch (Exception e) {
+                this.mException = e;
+            }
+            finally {
+                if (objInStream != null) {
+                    try {
+                        objInStream.close(); // this will close the bReader as well
+                    }
+                    catch (IOException ignored) {}
+                }
+                if (objURLConnection != null) {
+                    objURLConnection.disconnect();
+                }
+            }
+            return (objJSON);
         }
 
         @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
+        protected void onPostExecute(JSONObject result) {
+            super.onPostExecute(result);
+
+            if (this.mException != null) {
+//                Log.println(Log.ERROR,"JSON",this.mException.toString());
+            }
+            try {
+                mPlace = result.getString("name");
+                JSONObject main = result.getJSONObject("main");
+                mTemp = main.getString("temp");
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+            textViewInformation.setText(String.format("You are currently in %s, currently " +
+                    "%s meters above sea level, and the local temperature is %s degrees celsius.", mPlace, mAltitude, mTemp));
+            mTemp += " " + (char) 0x2103;
+            floatingActionButton.show();
         }
     }
 
     private class RetrieveElevation extends AsyncTask<Void,Void,JSONObject> {
+
+        Exception mException;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+
+            this.mException = null;
         }
 
         @Override
-        protected JSONObject doInBackground(Void... params) {
-            return null;
+        protected JSONObject doInBackground(Void... voids) {
+
+            StringBuilder urlString = new StringBuilder();
+            urlString.append(elevationAPIURUL);
+            urlString.append(mLatitudeText);
+            urlString.append(",");
+            urlString.append(mLongitudeText);
+            urlString.append("&key=");
+            urlString.append(elevationAPIKey);
+
+//            Log.println(Log.INFO,"ELEVATION URL",urlString.toString());
+
+            HttpURLConnection objURLConnection = null;
+            URL objURL;
+            JSONObject objJSON = null;
+            InputStream objInStream = null;
+
+            try {
+                objURL = new URL(urlString.toString());
+                objURLConnection = (HttpURLConnection) objURL.openConnection();
+                objURLConnection.setRequestMethod("GET");
+                objURLConnection.setDoOutput(true);
+                objURLConnection.setDoInput(true);
+                objURLConnection.connect();
+                objInStream = objURLConnection.getInputStream();
+                BufferedReader objBReader = new BufferedReader(new InputStreamReader(objInStream));
+                String line;
+                String response = "";
+                while ((line = objBReader.readLine()) != null) {
+                    response += line;
+                }
+                objJSON = (JSONObject) new JSONTokener(response).nextValue();
+            }
+            catch (Exception e) {
+                this.mException = e;
+            }
+            finally {
+                if (objInStream != null) {
+                    try {
+                        objInStream.close(); // this will close the bReader as well
+                    }
+                    catch (IOException ignored) {}
+                }
+                if (objURLConnection != null) {
+                    objURLConnection.disconnect();
+                }
+            }
+            return (objJSON);
         }
 
         @Override
-        protected void onPostExecute(JSONObject jsonObject) {
-            super.onPostExecute(jsonObject);
+        protected void onPostExecute(JSONObject result) {
+            super.onPostExecute(result);
+
+            if (this.mException != null) {
+//                Log.println(Log.ERROR,"JSON",this.mException.toString());
+            }
+            try {
+                JSONArray objJSONArray = result.optJSONArray("results");
+                JSONObject objJSONObject = objJSONArray.getJSONObject(0);
+                int intAltitude = objJSONObject.getInt("elevation");
+                mAltitude = Integer.toString(intAltitude);
+//                Log.println(Log.INFO,"JSON",mAltitude);
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -2,7 +2,8 @@
     <string name="app_name">Location Reporter</string>
     <string name="title_map">Map</string>
     <string name="title_information">Information</string>
-    <string name="title_history">Place Weather Time</string>
+    <string name="title_history">History</string>
     <string name="title_main">Main</string>
     <string name="title_activity_maps">Map</string>
+    <string name="string_information">Loading...</string>
 </resources>

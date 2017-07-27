@@ -9,6 +9,6 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/title_main"
-        android:id="@+id/textview_information" />
+        android:id="@+id/textview_information_place" />
 
 </LinearLayout>
