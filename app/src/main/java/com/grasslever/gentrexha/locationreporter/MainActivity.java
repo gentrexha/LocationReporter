@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity implements LocationMapFragme
                     fragmentManager.beginTransaction().replace(R.id.content, new LocationMapFragment()).commit();
                     return true;
                 case R.id.navigation_history:
-                    fragmentManager.beginTransaction().replace(R.id.content, new HistoryFragment()).commit();
+                    fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.content, new HistoryFragment()).commit();
                     return true;
                 case R.id.navigation_information:
                     InformationFragment newFragment = new InformationFragment();

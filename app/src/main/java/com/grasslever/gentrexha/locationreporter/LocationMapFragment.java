@@ -48,13 +48,7 @@ public class LocationMapFragment extends MapFragment implements
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private Location mCurrentLocation;
-    private String mLatitude = "n/a";
-    private String mLongitude = "n/a";
-    private final Bundle objBundle = new Bundle();
-    private int locationRequestCode;
     OnLocationFound mCallback;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 585;
 
     GoogleMap mGoogleMap;
     MapFragment mapFrag;
@@ -136,6 +130,7 @@ public class LocationMapFragment extends MapFragment implements
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
         }
     }
 
@@ -153,7 +148,6 @@ public class LocationMapFragment extends MapFragment implements
             mCurrLocationMarker.remove();
         }
 
-        //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         mCallback.onLocationFound(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
         MarkerOptions markerOptions = new MarkerOptions();
