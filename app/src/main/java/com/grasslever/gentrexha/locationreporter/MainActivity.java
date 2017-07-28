@@ -1,28 +1,23 @@
 package com.grasslever.gentrexha.locationreporter;
 
-import android.Manifest;
-import android.app.AlertDialog;
-import android.app.FragmentTransaction;
-import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+<<<<<<< HEAD
 import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.MapFragment;
+=======
+>>>>>>> origin/master
 
 public class MainActivity extends AppCompatActivity implements LocationMapFragment.OnLocationFound{
 
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 585;
     private String mLatitude = "n/a";
     private String mLongitude = "n/a";
-    MapFragment mapFragment;
+    LocationMapFragment locationMapFragment;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -63,16 +58,16 @@ public class MainActivity extends AppCompatActivity implements LocationMapFragme
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         navigation.setSelectedItemId(R.id.navigation_map);
 
-        mapFragment = new MapFragment();
+        locationMapFragment = new LocationMapFragment();
         android.app.FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.content, new LocationMapFragment()).commit();
+        fragmentManager.beginTransaction().replace(R.id.content, locationMapFragment).commit();
 
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == LocationMapFragment.MY_PERMISSIONS_REQUEST_LOCATION){
-            mapFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            locationMapFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
         else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
