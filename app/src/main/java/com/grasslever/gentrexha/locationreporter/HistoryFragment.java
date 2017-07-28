@@ -4,17 +4,26 @@ import android.app.Fragment;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 /**
  * Created by GRexha on 25-Jul-17.
  */
 
 public class HistoryFragment extends Fragment {
+
+
+    FloatingActionButton floatingActionButton;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -43,5 +52,15 @@ public class HistoryFragment extends Fragment {
         ListView listView = (ListView) view.findViewById(R.id.list);
         SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getActivity(),R.layout.list_history,objCursor,columns,widgets,0);
         listView.setAdapter(cursorAdapter);
+
+        floatingActionButton = (FloatingActionButton) view.findViewById(R.id.showAllPlaces);
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.app.FragmentManager fragmentManager = getFragmentManager();
+                fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.content, new HistoryMapFragment()).commit();
+            }
+        });
     }
 }

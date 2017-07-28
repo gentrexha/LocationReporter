@@ -75,7 +75,7 @@ public class InformationFragment extends Fragment {
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.insertLocation(mPlace,mTemp,new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new java.util.Date()));
+                db.insertLocation(mPlace,mTemp,mLatitudeText, mLongitudeText, new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new java.util.Date()));
                 Toast.makeText(getActivity(),"Location saved and added to history.",Toast.LENGTH_LONG).show();
             }
         });

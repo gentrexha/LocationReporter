@@ -19,6 +19,8 @@ class Database extends SQLiteOpenHelper {
     private static final String LOCATION_COLUMN_ID = "_id";
     static final String LOCATION_COLUMN_PLACE = "place";
     static final String LOCATION_COLUMN_WEATHER = "weather";
+    static final String LOCATION_COLUMN_LAT = "lat";
+    static final String LOCATION_COLUMN_LNG = "lng";
     static final String LOCATION_COLUMN_TIME = "time";
 
     Database(Context context) {
@@ -31,15 +33,19 @@ class Database extends SQLiteOpenHelper {
                 LOCATION_COLUMN_ID + " INTEGER PRIMARY KEY, " +
                 LOCATION_COLUMN_PLACE + " TEXT, " +
                 LOCATION_COLUMN_WEATHER + " TEXT, " +
+                LOCATION_COLUMN_LAT + " TEXT, " +
+                LOCATION_COLUMN_LNG + " TEXT, " +
                 LOCATION_COLUMN_TIME + " TEXT)"
         );
     }
 
-    public void insertLocation(String name, String weather, String time) {
+    public void insertLocation(String name, String weather, String lat, String lng, String time) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(LOCATION_COLUMN_PLACE, name);
         contentValues.put(LOCATION_COLUMN_WEATHER, weather);
+        contentValues.put(LOCATION_COLUMN_LAT, lat);
+        contentValues.put(LOCATION_COLUMN_LNG, lng);
         contentValues.put(LOCATION_COLUMN_TIME, time);
         db.insert(LOCATION_TABLE_NAME, null, contentValues);
     }
