@@ -5,13 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-<<<<<<< HEAD
-import android.view.View;
-import android.widget.Toast;
-
-import com.google.android.gms.maps.MapFragment;
-=======
->>>>>>> origin/master
 
 public class MainActivity extends AppCompatActivity implements LocationMapFragment.OnLocationFound{
 
