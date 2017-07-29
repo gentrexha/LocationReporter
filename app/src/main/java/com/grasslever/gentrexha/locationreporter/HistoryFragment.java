@@ -1,6 +1,7 @@
 package com.grasslever.gentrexha.locationreporter;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -54,12 +55,11 @@ public class HistoryFragment extends Fragment {
         listView.setAdapter(cursorAdapter);
 
         floatingActionButton = (FloatingActionButton) view.findViewById(R.id.showAllPlaces);
-
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                android.app.FragmentManager fragmentManager = getFragmentManager();
-                fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.content, new HistoryMapFragment()).commit();
+                Intent myint = new Intent(getActivity(),HistoryMapActivity.class);
+                startActivity(myint);
             }
         });
     }
