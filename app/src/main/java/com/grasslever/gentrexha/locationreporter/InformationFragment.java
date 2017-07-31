@@ -81,11 +81,17 @@ public class InformationFragment extends Fragment {
         });
 
         if (isNetworkAvailable()) {
-            new RetrieveElevation().execute();
-            new RetrieveWeather().execute();
+            if (mLatitudeText.equals("n/a"))
+            {
+                Toast.makeText(getActivity(),"Couldn't retrieve location from map.",Toast.LENGTH_LONG).show();
+            }
+            else {
+                new RetrieveElevation().execute();
+                new RetrieveWeather().execute();
+            }
         }
         else {
-            Toast.makeText(getActivity(),"You have no available internet connection",Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(),"You have no available internet connection. Please try again",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -111,7 +117,6 @@ public class InformationFragment extends Fragment {
             urlString.append("&units=metric");
             urlString.append("&apiKey=");
             urlString.append(openweatherAPIKey);
-//            Log.println(Log.INFO,"URL:",urlString.toString());
             HttpURLConnection objURLConnection = null;
             URL objURL;
             JSONObject objJSON = null;
@@ -139,7 +144,7 @@ public class InformationFragment extends Fragment {
             finally {
                 if (objInStream != null) {
                     try {
-                        objInStream.close(); // this will close the bReader as well
+                        objInStream.close();
                     }
                     catch (IOException ignored) {}
                 }
@@ -154,9 +159,7 @@ public class InformationFragment extends Fragment {
         protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
 
-            if (this.mException != null) {
-//                Log.println(Log.ERROR,"JSON",this.mException.toString());
-            }
+            if (this.mException != null) {}
             try {
                 mPlace = result.getString("name");
                 JSONObject main = result.getJSONObject("main");
@@ -179,7 +182,6 @@ public class InformationFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
             this.mException = null;
         }
 
@@ -193,8 +195,6 @@ public class InformationFragment extends Fragment {
             urlString.append(mLongitudeText);
             urlString.append("&key=");
             urlString.append(elevationAPIKey);
-
-//            Log.println(Log.INFO,"ELEVATION URL",urlString.toString());
 
             HttpURLConnection objURLConnection = null;
             URL objURL;
@@ -223,7 +223,7 @@ public class InformationFragment extends Fragment {
             finally {
                 if (objInStream != null) {
                     try {
-                        objInStream.close(); // this will close the bReader as well
+                        objInStream.close();
                     }
                     catch (IOException ignored) {}
                 }
@@ -237,16 +237,13 @@ public class InformationFragment extends Fragment {
         @Override
         protected void onPostExecute(JSONObject result) {
             super.onPostExecute(result);
-
             if (this.mException != null) {
-//                Log.println(Log.ERROR,"JSON",this.mException.toString());
             }
             try {
                 JSONArray objJSONArray = result.optJSONArray("results");
                 JSONObject objJSONObject = objJSONArray.getJSONObject(0);
                 int intAltitude = objJSONObject.getInt("elevation");
                 mAltitude = Integer.toString(intAltitude);
-//                Log.println(Log.INFO,"JSON",mAltitude);
             }
             catch (JSONException e) {
                 e.printStackTrace();

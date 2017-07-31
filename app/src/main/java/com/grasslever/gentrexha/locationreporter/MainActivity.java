@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity implements LocationMapFragme
                     fragmentManager.beginTransaction().replace(R.id.content, new LocationMapFragment()).commit();
                     return true;
                 case R.id.navigation_history:
-                    fragmentManager.beginTransaction().addToBackStack(null).replace(R.id.content, new HistoryFragment()).commit();
+                    fragmentManager.beginTransaction().replace(R.id.content, new HistoryFragment()).commit();
                     return true;
                 case R.id.navigation_information:
                     InformationFragment newFragment = new InformationFragment();
@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity implements LocationMapFragme
                     newFragment.setArguments(args);
                     android.app.FragmentTransaction transaction = getFragmentManager().beginTransaction();
                     transaction.replace(R.id.content, newFragment);
-                    transaction.addToBackStack(null);
                     transaction.commit();
                     return true;
             }
